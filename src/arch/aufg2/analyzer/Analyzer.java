@@ -151,7 +151,7 @@ public class Analyzer implements ComplexityAnalyzer {
 			@Override
 			public boolean accept(File dir, String name) {
 				return name.matches("javap");
-			}
+			}rr
 		}).length == 1){
     		try{
     			result = Paths.get(new URI("file://"+(w.concat("javap"))));
