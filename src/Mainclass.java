@@ -10,7 +10,7 @@ public class Mainclass {
 
 	public static void main(String[] args) throws URISyntaxException,IOException{
 		Analyzer smart = new Analyzer();
-		smart.setRootdir(Paths.get(new URI("file:///C:/Users/fabian/JavaBsp")));
+		smart.setRootdir(Paths.get(new URI("file:///home/fabian/SARCH")));
 		System.out.println("\n Bitte Warten auf Ergebnis \n");
 		Map<String, Integer> map = smart.analyzeClassfiles();
 		System.out.println("+++++++++++++++++++++++++++++++++");
