@@ -74,7 +74,27 @@ public class Analyzer implements ComplexityAnalyzer {
     private Path getJavapPath() throws IOException{
     	Path result = rootdir;
     	
-    	String path = System.getenv("PATH");
+    	//String path = System.getenv("PATH");
+    	//String os_name = System.getProperty("os.name");
+    	
+    		String os_name = System.getProperty("os.name");
+    	if(os_name.matches("(lL)inux")){
+    		try {
+    			result = Paths.get(new URI("file:///usr/lib/jvm/java-8-openjdk-amd64/bin/javap"));
+    		}catch(URISyntaxException e){}
+        	return result;
+    	}
+    	else if(os_name.matches("(.)*Windows(.)*")){ 
+        	result = Paths.get(new File("C:\\Program Files\\Java\\jdk1.8.0_66/bin\\javap").toURI());
+        	return result;
+    	}
+
+    	System.out.println("####\n####\n In getJavapPath    "+result+"\n####\\n####\n\n");
+    	return result;
+    	/*
+    	//if(System.getProperty("os.name"))
+    	System.out.println(System.getProperty("java.home"));
+    	//Files.new File(System.getProperty("java.home")).getParentFile();
     	String[] env = path.split(";");
     	String javapath = "";
     	if(env.length == 1) {
@@ -88,6 +108,7 @@ public class Analyzer implements ComplexityAnalyzer {
     		}
     	System.out.println("**********\n\n"+javapath+"\n\n*********");
     	File file = new File(javapath);
+    	
     	
     /*	for(String s:file.list()){
     		System.out.println(s);
@@ -139,11 +160,7 @@ public class Analyzer implements ComplexityAnalyzer {
     	else{
     		throw new IOException();
     	} */
-    	try{
-    		result = Paths.get(new URI("file:///usr/lib/jvm/java-8-openjdk-amd64/bin/javap"));
-    	}catch(URISyntaxException e){}
-    		
-    	return result;
+    	
     }
     
     private int getComplexity(String compiledjavapcode){
@@ -170,6 +187,7 @@ public class Analyzer implements ComplexityAnalyzer {
 		
 		for(Path path:list){
 			try{
+				System.out.println("ppppppppppppppp Javapath = "+javapstring);
 				String string = runProgram(javapstring,"-c",path.toString());
 				int i = getComplexity(string);
 				map.put(path.toString(), i);
