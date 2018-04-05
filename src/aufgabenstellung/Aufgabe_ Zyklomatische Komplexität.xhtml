@@ -1,0 +1,183 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.1//EN" "http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd"><html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="content-type" content="text/html; charset=latin-1" />
+<title>Aufgabe: Zyklomatische Komplexität</title>
+<link type="text/css" href="./Aufgabe_ Zyklomatische Komplexität_files/slides.css" rel="stylesheet" media="print, screen" />
+</head>
+<body>
+<a name="top" /><table class="header">
+<td class="cellleft"><a class="uplink" href="http://sol.cs.hm.edu/course/st/arch-lab/index.xhtml">Praktikum Software-Architektur</a>
+<br /><span class="titletext">2 Aufgabe: Zyklomatische Komplexität</span>
+</td>
+<td class="cellright"><a name="top" />
+<a class="arrows" href="http://sol.cs.hm.edu/course/st/arch-lab/slide0013.xhtml">←</a> <a class="arrows" href="http://sol.cs.hm.edu/course/st/arch-lab/map.xhtml#16">≡</a> <a class="arrows" href="http://sol.cs.hm.edu/course/st/arch-lab/slide0020.xhtml">→</a>
+</td>
+</table>
+<p />
+ <a name="2" />
+
+<div class="quoted">
+<img src="./Aufgabe_ Zyklomatische Komplexität_files/announcement.png" border="0" align="center" />
+Letzter Abgabetermin: <strong>Sonntag, 08.04.2018</strong>
+</div>
+
+<h2>Ziel</h2>
+
+<ul><li>Verständnis des Aspektes <cite>simple</cite> des Entwurfsprinzipes <cite>keep it small and simple</cite> (KISS)
+</li><li>Konkrete Umsetzung der Metrik „Zyklomatische Komplexität“.
+</li><li>Entwickeln eines prototypischen Werkzeuges zur statischen Codeanalyse.
+</li></ul>
+
+<h2>Aufgabe</h2>
+
+Ein Maß für die Komplexität von Code ist die Anzahl der Verzweigungen.
+Dieser Wert entspricht etwa der zyklomatischen Komplexität nach McCabe.
+
+<p />
+Schreiben Sie ein Analyse-Werkzeug,
+das Classfiles untersucht,
+die Anzahl der Verzweigungen im Bytecode bestimmt und zusammenfassend berichtet.
+Dieses Werkzeug könnte beispielsweise Hinweise auf Problemkandidaten
+eines bestehenden Projektes liefern,
+die als lohnende Ansatzpunkte für ein Refactoring in Frage kommen.
+
+<p />
+Ihr Werkzeug disassembliert die Classfiles dazu <cite>on the fly</cite> mit dem Java-Disassembler <code>javap</code>
+und untersucht dessen Ausgabe.
+
+Als Beispiel dient der
+<a href="http://sol.cs.hm.edu/course/st/arch-lab/HelloJava.p">disassemblierte Bytecode</a>
+des
+<a href="http://sol.cs.hm.edu/course/st/arch-lab/HelloJava.java">Programms <code>HelloJava</code>.</a>
+
+Gewinnen Sie aus disassemblierten Bytecode die Komplexität folgendermaßen:
+
+<ul><li>Addieren Sie alle <strong>Branch-Instruktionen.</strong>
+Dokumentation zum Instruktionssatz der JVM SE 8 finden Sie im Internet.
+<a class="footnote" href="http://sol.cs.hm.edu/course/st/arch-lab/slide0017.xhtml">∗</a>
+
+
+
+</li><li>Verfahren Sie ebenso mit <strong><code>catch</code>-Blöcken,</strong>
+von denen jeder als Verzweigung zur Komplexität beiträgt.
+
+</li><li>Addieren Sie zum Ergebnis die <strong>Anzahl der konkreten Methoden.</strong>
+Das betrifft auch Konstruktoren und Lambda-Ausdrücke,
+die der Compiler derzeit noch in Methoden übersetzt.
+<a class="footnote" href="http://sol.cs.hm.edu/course/st/arch-lab/slide0018.xhtml">∗</a>
+
+</li><li>Der Compiler übersetzt ein Sourcecode-File eventuell in mehrere Classfiles,
+die das Werkzeug getrennt aufgreift und ausmisst.
+Das ist in Ordnung.
+
+</li></ul>
+
+<code>HelloJava</code> hat die Komplexität 2. Es enthält 2 Methoden,
+keine Verzweigungen und kein Exception-Handling.
+
+<h3>Offene Punkte</h3>
+
+<dl><dt><strong><code>switch</code>-Anweisungen</strong></dt><dd>
+Jedes <code>case</code> in einem <code>switch</code>-Verteiler entspricht einer <code>if</code>-Anweisung.
+Allerdings übersetzt der Javacompiler <code>switch</code>-Anweisungen recht trickreich,
+sodass der Bytecode die Anzahl der ursprünglichen <code>case</code>-Zweige nicht direkt widerspiegelt.
+<a class="footnote" href="http://sol.cs.hm.edu/course/st/arch-lab/slide0019.xhtml">∗</a>
+
+</dd><dt><strong>ARM-Blöcke</strong></dt><dd>
+Seit Version 6 kennt Java ARM-Blöcke,
+die die diffizile und fehlerträchtige Freigabe von Ressourcen sicher und zuverlässig übernehmen.
+Dazu generiert der Javacompiler am Ende von ARM-Blöcke einigen
+komplizierten Bytecode,
+in dem viele Branch-Instruktionen stecken.
+
+<p />
+Er ist leider schwer zu erkennen und kaum von den
+Verzweigungen im Sourcecodes zu unterscheiden,
+die tatsächlich zur Komplexität beitragen.
+
+</dd></dl>
+
+Um den Aufwand zu begrenzen, ignoriert Ihr Werkzeuge diese Probleme.
+In den Tests auf dem Server kommen sie nicht vor.
+
+<h3>Start von Sub-Prozessen <cite>on the fly</cite></h3>
+
+Ihr Werkzeug disassembliert Classfiles mit <code>javap</code>.
+Der automatische Start eines Programms aus Javacode heraus ist nicht ganz trivial,
+aber auch nicht Gegenstand dieser Lehrveranstaltung.
+Übernehmen Sie daher den nötigen Code aus
+<a href="http://sol.cs.hm.edu/course/st/arch-lab/ProcessRunner.java">dem Demoprogramm <code>ProcessRunner</code>.</a>
+
+<h3>Interface <code>ComplexityAnalyzer</code></h3>
+
+Als einheitliche Schnittstelle implementiert Ihr Werkzeug
+<a href="http://sol.cs.hm.edu/course/st/arch-lab/ComplexityAnalyzer.java">das Interface <code>ComplexityAnalyzer.java</code>.</a>
+
+<h2>Hinweise</h2>
+
+<ul><li>Ihr Programm erhält als Startpunkt eine Package-Root,
+unter der Bytecode in korrekten Packagepfaden liegt.
+
+</li><li>Gehen Sie in den folgenden Schritten vor:
+
+<ol><li>Finden Sie alle Files
+<a href="https://docs.oracle.com/javase/8/docs/api/java/nio/file/Files.html#walk-java.nio.file.Path-java.nio.file.FileVisitOption...-">(etwa mit <code>Files.walk</code>).</a>
+Berücksichtigen Sie davon nur Classfiles (Extension <code>.class</code>) und ignorieren Sie alles andere.
+
+</li><li>Rufen Sie für jedes Classfile den Disassembler auf
+<a href="http://sol.cs.hm.edu/course/st/arch-lab/ProcessRunner.java">(siehe <code>ProcessRunner</code>).</a>
+
+</li><li>Durchsuchen Sie die Ausgabe nach bestimmten Substrings und zählen Sie diese.
+Reguläre Ausdrücke vereinfachen das,
+sind aber nicht unbedingt nötig.
+
+</li><li>Tragen Sie die Ergebnisse in eine <code>Map</code> ein, die Sie am Ende zurück geben.
+</li></ol>
+
+</li><li>Brechen Sie bei Fehlern im Filesystem mit einer <code>IOException</code> ab.
+Weitere Maßnahmen sind nicht nötig.
+
+</li><li>Eine Musterlösung dieser Aufgabe hat die Komplexität 33 <img class="icon" src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABUAAAAUCAYAAABiS3YzAAAABmJLR0QA/wD/AP+gvaeTAAAACXBI WXMAAACpAAAAqQGrs1EiAAAAB3RJTUUH3wQPBxkpXqKVPQAABGlJREFUOMt1lXto1WUYxz/Pe37n d852bjubTs01cS4Tb02dOs2ISE1cIYXoH0IXcV4LLANNSAQJCiqsP9IMEiMiDQoVr+hUvOB0NtnN y8oxU6cz3M6uZzu//Z7++M1pXl54eN7r5/0+71VUlSelrz6WGeNHUpQZM6PjmWMmBsKRnI7mmvq2 tkTVvQS1lVc5u+ZLPfWksfIodMVCGfLu/JyvC6csWOgLPyfYuagEvEYXcJoQp55Uy1H3zOnSn349 yPotO7XxqdAfNvqWvTnv1c8GPDM7C5+BVBJ8Lur0ep1FAAuMDWKjTh2NtTsb9526u7Fko257DPr7 t5nL5hUXbzX+DHA7QXvodbo5ePwGUwvjDMz0c/deirILCea8nIPPCoBJB7FwWo6za3/14kXrdDsA qsqG5eS3XJye0Lpi1SuvqF6aplo3Sd9/e4ACWjAmqE7DWC0YE1RAP3hnoGrdVNXLL6lenaVa94be ORpr2rCcfFXFEhFTuztnR8zuitLdDG4S0nvA79Da1Q5AcyJFd28zzYkUAC1t7WBfh5QNjg29QbIH 5w4snl77nYjM8e3YlDZ/ZlHkI7oSYLdAoB3Su8DAlAlBBg30s2Z5lOG5NkWTbEbmWaxemkY05oDb DtoJbhf0OgzN9o0YlNF1US78Evp84iizFr8DIQcCFkj6A8MGsR5srTpAjwfTpOd7HOiwoMNwsrJt gxULdY/GVQi5YNsgYZCoBzT3ofYj0CRo0FOKAbvVg3dbZEcYb4I4owi77D4uYPqAJgomAyQDTKaX 7/d99dKXN1GQMLsOGQg5hNN4wXItFBsSbQFu3E4nZ2i0H6wSAgl6ajHe6RcHNIloG6gB1+X6rSSp 3gCEu3DTUNNpqMS2KSwIU1EtXvgmikrsIaUPWwbI/XYvsopqYeL4MGDT2UulaWqlEgnyfH6McxUO SBiVSP8SiMQQE0NMHPHHEYn1L4MHTufsnw4j8zNA0mlqpdLUXJMqJIjPl8a0yVkcO93Rr0D8EQ9g ZaJWlqfcn+HVSxgkzOET7bw4NQufCYAEqf7bVJkVn+iesgo5jNjMnZXD6XMJ2tp9iBXywrTiYDIR 43mVuDehhGhpNZw408zrs3NAgpRV6OGV6909RlXdA6Xdqxqb5A5i8+HKCXzzfQ1HSm+gEkEkgkoc 9cVRifeVI5SevMXmrZWsW10IYtPYpHf2l/asUlW3/0H5ecuo9xa8NfZHf2AI+Aew90AjZ8puU1Aw lsJJheSNyKP+Wj3l5eVcvnKZyQWDmDszG3Xvkupu5Lc/ahYvWn5p++NP3+bJS1+bOe7T3GH5OZhs sLKp/yfF+Qs3uVZ/m7zhg5k8aSjDn/WD2wROE9cb/rpx6EjVppLV57c9uCCq/7MVS8YNObavZHuy Zaujyb3q9pSrug3aqx2qboNXTu7VZMtW59i+ku0rlowb8ihDnvqdfLFwxrixY4oyB+SODkWGjrbt 6LCentaGjrabtff+vV5bVV1zds3anU/8Tv4DtyoCLd1hImYAAAAASUVORK5CYII=" style="vertical-align: middle;" />
+.
+
+</li></ul>
+
+<h2>Anforderungen</h2>
+
+<ul><li>Ihre Klasse definiert einen öffentlichen Default-Konstruktor.
+
+</li><li>Das voreingestellte Directory ist das aktuelle Arbeitsdirectory,
+das die System-Property <code>user.dir</code> liefert:
+<pre class="formatted">System.out.println(System.getProperty("user.dir"));</pre>
+
+</li><li>Mehrere aufeinander folgende Aufrufe von <code>analyzeClassfiles</code> sind
+unabhängig voneinander.
+
+</li></ul>
+
+<h2>Bewertung</h2>
+
+
+Der Server führt beim Upload nur grundlegende Tests durch.
+Weitere Tests folgen nach der Abgabe außerhalb des Servers.
+Korrekt ist Ihre Lösung erst dann, wenn Sie <cite>alle</cite> Tests besteht.
+
+<p />
+ <img class="icon" src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAACYElEQVR42pXTW0iTYRgH8P82cbMp ZYaUwag8dZE4j7lACaQLGyVJUBpdGGQMTHe3sovs4FWRHaAunLZSyrqohEzCQ2Pq2EgYFKhoEsHK IBzEEpTN79+zScnyAH3w4/0evuf9v+93wrsSYC0jJux2FqFlTwKysNHhKlnNuR9wl+JpwAa25aJH 2uLWDZCVVhnOR+kniyasTObw+3kNC/U4um7Av1sfKoLacwADiyNmKkqQisfMLiPcOhX0awYMm2I5 jTjmb9JzZtpBx+NuTk10cL55EyuTcWbNALdpxUgxtGPl8C1Nn2bPmxe0Wm3sfNZFZbKab0sxoQW2 bhyQh3P+m5tl673sH3jCxkYbX/U8lPolg61JrE3FhVUBzpJlQwXY4juCz2F/tUxwcnzcwfp6Kz3e B1L3UflWSe9hfE1RwxATMBpZOfLe83H5x6Nkab4jOhgI3GNDQx39/htS3xZNXOhKZGMabsUEeEzR yYaPNZhbCpZL41VxSVyky3WW4bBVzi2ijkowlx9q8HO7Bjkrz0BWdxfjbqBPL01V4kTU3FwVe3sr ODtbIfUhUSYKuTQYz+vpcMhU1fKXmIecCQvmldBOacgXeaKAra17CeygzbZL6gxhENITSuKXeizs 06EsGuA9iO75cbVcjNx/itgW1e9KprE4iZ3PE6WO7C5BxIs4KlPgfSNeqwEdZk7iV8itZtirZdij +0sZ0wqZ8D6OIbeGkZ7QqEpGyNcJ+o5jUX6QdJxKQ21LNtqas9Au7M1ZKvvyCPuVbBkzRUasa5lo N6fCJjeQ+udZRv62+P+kEerfm7CJUv3wFI8AAAAASUVORK5CYII=" style="vertical-align: middle;" />
+ In dieser Aufgabe liegt es weitgehend in Ihrer eigenen Verantwortung,
+die Korrektheit abzusichern.
+
+<h2>Abgabe</h2>
+
+Geben Sie Ihre Implementierung des <code>ComplexityAnalyzer</code> ab.
+Das Interface liegt auf dem Server.
+
+<p />
+<table class="footer">
+<td class="cellleft">©2018-04-04 <a href="mailto:rs@cs.hm.edu">R. Schiedermeier</a>, <a href="http://www.cs.hm.edu/">Fakultät für Informatik</a>, <a href="http://www.hm.edu/">Hochschule München</a></td>
+<td class="cellright"><a class="arrows" href="http://sol.cs.hm.edu/course/st/arch-lab/slide0013.xhtml">←</a> <a class="arrows" href="http://sol.cs.hm.edu/course/st/arch-lab/slide0016.xhtml#top">↑</a> <a class="arrows" href="http://sol.cs.hm.edu/course/st/arch-lab/slide0020.xhtml">→</a>
+</td>
+</table>
+</body>
+</html>
