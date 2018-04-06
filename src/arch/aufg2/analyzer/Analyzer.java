@@ -22,34 +22,34 @@ import java.util.stream.Collectors;
 import edu.hm.cs.rs.arch18.a02_staticanalyzer.ComplexityAnalyzer;
 
 /**
- * Der Analyzer berechnet die Komplexitaet von class Dateien
+ * Der Analyzer berechnet die Komplexitaet von class Dateien.
  * @author fabian
  * */
 public class Analyzer implements ComplexityAnalyzer {
+	/**
+	 * rootdir Das Default-Verzeichnis.
+	 * */
 	private Path rootdir;
 	
 	/**
 	 * Setzt das Root-Verzeichnis auf den Pfad
-	 * in dem sich der User aktuell befindet
+	 * in dem sich der User aktuell befindet.
+	 * @throws URISyntaxException bei ungueltiger URI Syntax
 	 * @author fabian
 	 * */
-	public Analyzer(){
-		try{
-			rootdir = Paths.get(new URI("file://"+System.getProperty("user.dir")));
-		}catch( URISyntaxException e){
-			e.printStackTrace();
-		}
+	public Analyzer() throws URISyntaxException{
+		rootdir = Paths.get(new File(System.getProperty("user.dir")).toURI());
 	}
 
 	/**
-	 * Setzt das Root-Verzeichnis auf einen beliebigen Pfad
+	 * Setzt das Root-Verzeichnis auf einen beliebigen Pfad.
 	 * @author fabian
-	 * @param rootdir Pfad zum neuen Root-Verzeichnis
+	 * @param root Pfad zum neuen Root-Verzeichnis
 	 * @return Analyzer mit neuem Root-Verzeichnis
 	 * */
 	@Override
-	public ComplexityAnalyzer setRootdir(Path rootdir) throws IOException {
-		this.rootdir = rootdir;
+	public ComplexityAnalyzer setRootdir(Path root) throws IOException {
+		this.rootdir = root;
 		return this;
 	}
 	
@@ -82,15 +82,15 @@ public class Analyzer implements ComplexityAnalyzer {
     }
     
     /**
-     * Sucht das Programm javap
+     * Sucht das Programm javap.
      * @author fabian
      * @return Pfad zu Javap
      * @throws IOException wenn javap nicht gefunden wird
      * */
     private Path getJavapPath() throws IOException{
     	Path result = rootdir;
-    		final String os_name = System.getProperty("os.name");
-    	if(os_name.matches("(l|L)inux")){
+    		final String osname = System.getProperty("os.name");
+    	if(osname.matches("(l|L)inux")){
     		try {
     			result = Paths.get(new URI("file:///usr/lib/jvm/java-8-openjdk-amd64/bin/javap"));
     		}catch(URISyntaxException exception){
@@ -98,7 +98,9 @@ public class Analyzer implements ComplexityAnalyzer {
     		}
         	return result;
     	}
-    	else if(os_name.matches("(.)*Windows(.)*")){ 
+    	else if(osname.matches("(.)*Windows(.)*")){ 
+    		final String string = new File("C:\\Program Files\\Java\\jdk1.8.0_66/bin\\javap").toURI().toString();
+    		System.out.println(string);
         	result = Paths.get(new File("C:\\Program Files\\Java\\jdk1.8.0_66/bin\\javap").toURI());
         	return result;
     	}
@@ -107,18 +109,19 @@ public class Analyzer implements ComplexityAnalyzer {
     }
     
     /**
-     * Berechnet die Komplexitaet des Assembly code
+     * Berechnet die Komplexitaet des Assembly code.
      * @author fabian
+     * @param compiledjavapcode Die Ausgabe der von javap geparsten class datei in Assembly Code  
      * @return Komplexitaet
      * */
     private int getComplexity(String compiledjavapcode){
-    	String[] strings = compiledjavapcode.split("([0-9]+\\: if[a-z]+[ ]+[0-9]+)|([0-9]+\\: invoke[a-z]+[ ]+#[0-9]+)");
+    	final String[] strings = compiledjavapcode.split("([0-9]+\\: if[a-z_]+[ ]+[0-9]+)|([0-9]+\\: invoke[a-z]+[ ]+#[0-9]+)");
     	return strings.length-1;
     }
 
     /**
      * Sucht im Root-Verzeichnis und allen Unterverzeichnissen
-     * nach .class Dateien und berechnet deren Komplexitaet
+     * nach .class Dateien und berechnet deren Komplexitaet.
      * @author fabian
      * @return Eine Map welche die class Dateien und deren Komplexitaet enthaelt
      * */
@@ -127,11 +130,11 @@ public class Analyzer implements ComplexityAnalyzer {
 		final List<Path> list = new ArrayList<Path>();
 		final Map<String, Integer> map = new HashMap<>();
 		
-		Path javap = getJavapPath();	// Versuche den Pfad zu javap herauszufinden
-		String javapstring = javap.toString();
+		final Path javap = getJavapPath();	// Versuche den Pfad zu javap herauszufinden
+		final String javapstring = javap.toString();
 		
 		for(Iterator<Path> iterator= Files.walk(rootdir).iterator(); iterator.hasNext();){
-			Path path = iterator.next();
+			final Path path = iterator.next();
 			final String string = path.toString();
 			if(string.matches("(.)*\\.class")){
 				System.out.println("String s : " + string);
@@ -141,9 +144,9 @@ public class Analyzer implements ComplexityAnalyzer {
 		
 		for(Path path:list){
 			try{
-				String string = runProgram(javapstring,"-c",path.toString());
-				int i = getComplexity(string);
-				map.put(path.toString(), i);
+				final String string = runProgram(javapstring,"-c",path.toString());
+				final int complexity = getComplexity(string);
+				map.put(path.toString(), complexity);
 			}
 			catch( InterruptedException e){}
 		}

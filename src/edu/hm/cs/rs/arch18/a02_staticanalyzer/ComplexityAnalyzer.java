@@ -16,12 +16,14 @@ public interface ComplexityAnalyzer {
     /** Legt das Startdirectory neu fest.
      * Voreingestellt ist das aktuelle Arbeitsdirectory (System-Property user.dir).
      * @param rootdir Neues Startdirectory.
+     * @throws IOException wenn rootdir ungueltig ist
      * @return Dieser Analyzer.
      * @throws IOException wenn rootdir kein Directory ist.
      */
     ComplexityAnalyzer setRootdir(Path rootdir) throws IOException;
 
     /** Startet die Analyse und liefert die Ergebnisse als Map zurueck.
+     * @throws IOException wenn ein fehler auftritt
      * @return Map von FQCNs auf die zyklomatische Komplexitaet.
      */
     Map<String, Integer> analyzeClassfiles() throws IOException;

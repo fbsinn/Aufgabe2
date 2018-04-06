@@ -6,13 +6,24 @@ import java.util.Map;
 
 import arch.aufg2.analyzer.Analyzer;
 
+/**
+ * Testet die Analyzer Klasse.
+ * @author fabian
+ * */
 public class Mainclass {
 
+	/**
+	 * Startpunkt der Mainclass.
+	 * @author fabian
+	 * @param args Kommandozeilenargumente
+	 * @throws URISyntaxException Bei ungueltiger Eingabe einer URI
+	 * @throws IOException Bei Auftreten eines Fehlers
+	 * */
 	public static void main(String[] args) throws URISyntaxException,IOException{
-		Analyzer smart = new Analyzer();
-		smart.setRootdir(Paths.get(new URI("file:///home/fabian/SARCH")));
+		final Analyzer smart = new Analyzer();
+		smart.setRootdir(Paths.get(URI.create("file:///Users/fabian/JavaBsp")));
 		System.out.println("\n Bitte Warten auf Ergebnis \n");
-		Map<String, Integer> map = smart.analyzeClassfiles();
+		final Map<String, Integer> map = smart.analyzeClassfiles();
 		System.out.println("+++++++++++++++++++++++++++++++++");
 		System.out.println("+++++++++    ERGEBNIS   +++++++++");
 		System.out.println("+++++++++++++++++++++++++++++++++");
