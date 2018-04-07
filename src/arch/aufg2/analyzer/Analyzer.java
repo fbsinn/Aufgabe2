@@ -124,14 +124,33 @@ public class Analyzer implements ComplexityAnalyzer {
     	final List<String> allMatches = new ArrayList<String>();
     	//final Matcher m = Pattern.compile("([0-9]+\\: invokedynamic #[0-9]+\\,[ ]+[0-9]+)|(Code\\:[ ]*)|([0-9]+\\: if[a-z_]*[ ]+[0-9]+)|(Class)").matcher(compiledjavapcode);
     	//final Matcher m = Pattern.compile("(invokevirtual #3)|([0-9]+\\: invokedynamic #[0-9]+\\,[ ]+[0-9]+)|(Code\\:[ ]*)|([0-9]+\\: if[a-z_]*[ ]+[0-9]+)|(Class)").matcher(compiledjavapcode);
-    	final Matcher m = Pattern.compile("([0-9]+[ ]+[0-9]+[ ]+[0-9]+[ ]+Class[ ]+[a-z\\/A-Z]+)|([A-Za-z\\.$0-9]+\\([A-Za-z]*\\)\\;\n[ ]*Code:)|(if[a-z_]+[ ]+[0-9]+)|(void [a-z]+\\([a-z\\.A-Z]*\\)\\;\n[ ]*Code:)").matcher(compiledjavapcode);
+    	final Matcher m = Pattern.compile("(lookupswitch[ ]+\\{[^\\}]+\\})|(tableswitch[ ]+\\{[^\\}]+\\})|([0-9]+[ ]+[0-9]+[ ]+[0-9]+[ ]+Class[ ]+[a-z\\/A-Z]+)|([A-Za-z\\.$0-9]+\\([A-Za-z]*\\)\\;\n[ ]*Code:)|(if[a-z_]+[ ]+[0-9]+)|(void [a-z]+\\([a-z\\.A-Z\\[\\]]*\\)\\;\n[ ]*Code:)").matcher(compiledjavapcode);
     	
     	while (m.find()) {
     	   allMatches.add(m.group());
     	}
     	Set<String> set = new TreeSet<>(allMatches);
+    	boolean flag = false;
     	for(String s:set){
-    		System.out.println(s);
+    		String obj = s;
+    		if(s.matches("(tableswitch[ ]+\\{[^\\}]+\\})|((lookupswitch[ ]+\\{[^\\}]+\\}))")){ 
+    			String[] strings = s.split("[0-9a-z]+\\: [0-9]+");
+    			allMatches.remove(obj);
+    			flag = true;
+    			for(int i=0; i<=strings.length-2; i++){
+    				System.out.println("case" +i);
+    				allMatches.add("case" + i);
+    			}
+    		}
+    		//System.out.println(s);
+    	}
+    	if(flag){
+    		set.clear();
+    		set.addAll(allMatches);
+    		for(String s:set){
+    			System.out.println(s);
+    		}
+    		
     	}
     /*	int i=0;
     	int u=0;
