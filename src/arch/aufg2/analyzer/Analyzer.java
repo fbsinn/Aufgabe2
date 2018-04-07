@@ -124,7 +124,7 @@ public class Analyzer implements ComplexityAnalyzer {
     	final List<String> allMatches = new ArrayList<String>();
     	//final Matcher m = Pattern.compile("([0-9]+\\: invokedynamic #[0-9]+\\,[ ]+[0-9]+)|(Code\\:[ ]*)|([0-9]+\\: if[a-z_]*[ ]+[0-9]+)|(Class)").matcher(compiledjavapcode);
     	//final Matcher m = Pattern.compile("(invokevirtual #3)|([0-9]+\\: invokedynamic #[0-9]+\\,[ ]+[0-9]+)|(Code\\:[ ]*)|([0-9]+\\: if[a-z_]*[ ]+[0-9]+)|(Class)").matcher(compiledjavapcode);
-    	final Matcher m = Pattern.compile("(new[ ]+#[0-9]+)|(invokeinterface)|(invokespecial #[0-9])|(if[a-z_]+[ ]+[0-9]+)|(void [a-z]+\\([a-z\\.A-Z]*\\)\\;\n[ ]*Code:)").matcher(compiledjavapcode);
+    	final Matcher m = Pattern.compile("([0-9]+[ ]+[0-9]+[ ]+[0-9]+[ ]+Class[ ]+[a-z\\/A-Z]+)|(invokeinterface)|(public [A-Za-z]+\\([a-z]*\\)\\;\n[ ]*Code:)|(if[a-z_]+[ ]+[0-9]+)|(void [a-z]+\\([a-z\\.A-Z]*\\)\\;\n[ ]*Code:)").matcher(compiledjavapcode);
     	
     	while (m.find()) {
     	   allMatches.add(m.group());
