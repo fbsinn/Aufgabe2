@@ -17,8 +17,12 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
+import java.util.TreeSet;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
 import edu.hm.cs.rs.arch18.a02_staticanalyzer.ComplexityAnalyzer;
@@ -111,8 +115,38 @@ public class Analyzer implements ComplexityAnalyzer {
      * @return Komplexitaet
      * */
     private int getComplexity(String compiledjavapcode){
-    	final String[] strings = compiledjavapcode.split("([0-9]+\\: if[a-z_]+[ ]+[0-9]+)|([0-9]+\\: invoke[a-z]+[ ]+#[0-9]+)");
-    	return strings.length-1;
+    	System.out.println("##################  §§§§§§§§§§§  ##################");
+    	System.out.println(compiledjavapcode);
+    	System.out.println("##################  §§§§§§§§§§§  ##################");
+    	
+    	//final String[] strings = compiledjavapcode.split("([0-9]+\\: if[a-z_]+[ ]+[0-9]+)|([0-9]+\\: invoke[a-z]+[ ]+#[0-9]+)");
+    	//final String[] strings = compiledjavapcode.split("(invokevirtual[ ]#[0-9]+)([0-9]+\\: invokedynamic #[0-9]+\\,[ ]+[0-9]+)|(Code\\:[ ]*)|([0-9]+\\: if[a-z_]*[ ]+[0-9]+)|(Class)");
+    	final List<String> allMatches = new ArrayList<String>();
+    	final Matcher m = Pattern.compile("([0-9]+\\: invokedynamic #[0-9]+\\,[ ]+[0-9]+)|(Code\\:[ ]*)|([0-9]+\\: if[a-z_]*[ ]+[0-9]+)|(Class)").matcher(compiledjavapcode);
+    	
+    	
+    	while (m.find()) {
+    	   allMatches.add(m.group());
+    	}
+    	int i=0;
+    	int u=0;
+    	for(String s:allMatches){
+    		
+    		if(s.matches("invokevirtual #3")){
+    			u=1; System.out.println(s + "   " +u);
+    		}
+    		else{
+    			i++; System.out.println(s + "   " +i);
+    		}
+    	}
+    	/*
+    	Set<String> set = new TreeSet<>(allMatches);
+    	System.out.println("XXXXXXXXXXXX EEEEEEEEEE XXXXXXXXXXXXX");
+    	for(String s:set){
+    		System.out.println(s);
+    	} */
+    	
+    	return allMatches.size();
     }
 
     /**

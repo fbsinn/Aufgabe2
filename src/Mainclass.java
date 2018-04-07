@@ -21,7 +21,7 @@ public class Mainclass {
 	 * */
 	public static void main(String[] args) throws URISyntaxException,IOException{
 		final Analyzer smart = new Analyzer();
-		smart.setRootdir(Paths.get(URI.create("file:///Users/fabian/JavaBsp")));
+		smart.setRootdir(Paths.get(URI.create("file:///home/fabian/SARCH")));
 		System.out.println("\n Bitte Warten auf Ergebnis \n");
 		final Map<String, Integer> map = smart.analyzeClassfiles();
 		System.out.println("+++++++++++++++++++++++++++++++++");
