@@ -122,23 +122,32 @@ public class Analyzer implements ComplexityAnalyzer {
     	//final String[] strings = compiledjavapcode.split("([0-9]+\\: if[a-z_]+[ ]+[0-9]+)|([0-9]+\\: invoke[a-z]+[ ]+#[0-9]+)");
     	//final String[] strings = compiledjavapcode.split("(invokevirtual[ ]#[0-9]+)([0-9]+\\: invokedynamic #[0-9]+\\,[ ]+[0-9]+)|(Code\\:[ ]*)|([0-9]+\\: if[a-z_]*[ ]+[0-9]+)|(Class)");
     	final List<String> allMatches = new ArrayList<String>();
-    	final Matcher m = Pattern.compile("([0-9]+\\: invokedynamic #[0-9]+\\,[ ]+[0-9]+)|(Code\\:[ ]*)|([0-9]+\\: if[a-z_]*[ ]+[0-9]+)|(Class)").matcher(compiledjavapcode);
-    	
+    	//final Matcher m = Pattern.compile("([0-9]+\\: invokedynamic #[0-9]+\\,[ ]+[0-9]+)|(Code\\:[ ]*)|([0-9]+\\: if[a-z_]*[ ]+[0-9]+)|(Class)").matcher(compiledjavapcode);
+    	//final Matcher m = Pattern.compile("(invokevirtual #3)|([0-9]+\\: invokedynamic #[0-9]+\\,[ ]+[0-9]+)|(Code\\:[ ]*)|([0-9]+\\: if[a-z_]*[ ]+[0-9]+)|(Class)").matcher(compiledjavapcode);
+    	final Matcher m = Pattern.compile("(new[ ]+#[0-9]+)|(invokeinterface)|(invokespecial #[0-9])|(if[a-z_]+[ ]+[0-9]+)|(void [a-z]+\\([a-z\\.A-Z]*\\)\\;\n[ ]*Code:)").matcher(compiledjavapcode);
     	
     	while (m.find()) {
     	   allMatches.add(m.group());
     	}
-    	int i=0;
+    	Set<String> set = new TreeSet<>(allMatches);
+    	for(String s:set){
+    		System.out.println(s);
+    	}
+    /*	int i=0;
     	int u=0;
     	for(String s:allMatches){
     		
-    		if(s.matches("invokevirtual #3")){
+    		if(s.matches("invokevirtual #[0-9]")){
+    			u=1; System.out.println(s + "   " +u);
+    		}
+    		else if(s.matches("invokevirtual #4")){
     			u=1; System.out.println(s + "   " +u);
     		}
     		else{
     			i++; System.out.println(s + "   " +i);
     		}
-    	}
+    	} */
+    	System.out.println("Size   "+set.size());
     	/*
     	Set<String> set = new TreeSet<>(allMatches);
     	System.out.println("XXXXXXXXXXXX EEEEEEEEEE XXXXXXXXXXXXX");
@@ -146,7 +155,7 @@ public class Analyzer implements ComplexityAnalyzer {
     		System.out.println(s);
     	} */
     	
-    	return allMatches.size();
+    	return set.size();
     }
 
     /**
