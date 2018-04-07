@@ -17,6 +17,8 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import java.util.stream.Collectors;
 
 import edu.hm.cs.rs.arch18.a02_staticanalyzer.ComplexityAnalyzer;
@@ -74,8 +76,9 @@ public class Analyzer implements ComplexityAnalyzer {
             BufferedReader bufferedReader = new BufferedReader(reader)) {
             final Thread collector = new Thread(() -> bufferedReader.lines().forEach(output::add));
             collector.start();
-            if(process.waitFor() != 0)
+            if(process.waitFor() != 0){
                 throw new IOException("process failed");
+            }
             collector.join();
         }
         return output.stream().collect(Collectors.joining("\n"));
@@ -94,15 +97,8 @@ public class Analyzer implements ComplexityAnalyzer {
     		try {
     			result = Paths.get(new URI("file:///usr/lib/jvm/java-8-openjdk-amd64/bin/javap"));
     		}catch(URISyntaxException exception){
-    			exception.printStackTrace();
+    			Logger.getAnonymousLogger().log(Level.SEVERE, "URISyntaxException occured!", exception);
     		}
-        	return result;
-    	}
-    	else if(osname.matches("(.)*Windows(.)*")){ 
-    		final String string = new File("C:\\Program Files\\Java\\jdk1.8.0_66/bin\\javap").toURI().toString();
-    		System.out.println(string);
-        	result = Paths.get(new File("C:\\Program Files\\Java\\jdk1.8.0_66/bin\\javap").toURI());
-        	return result;
     	}
     	
     	return result;
@@ -148,7 +144,9 @@ public class Analyzer implements ComplexityAnalyzer {
 				final int complexity = getComplexity(string);
 				map.put(path.toString(), complexity);
 			}
-			catch( InterruptedException e){}
+			catch( InterruptedException interruptedException){
+				Logger.getAnonymousLogger().log(Level.SEVERE, "InterruptedException occured!", interruptedException);
+			}
 		}
 		
 		return map;
