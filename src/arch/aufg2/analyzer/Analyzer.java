@@ -183,7 +183,7 @@ public class Analyzer implements ComplexityAnalyzer {
 		
 		for(Path path:list){
 			try{
-				final String string = runProgram(javapstring,"-c",path.toString());
+				final String string = runProgram(javapstring,"-c","-p",path.toString());
 				final int complexity = getComplexity(string);
 				map.put(path.toString(), complexity);
 			}
