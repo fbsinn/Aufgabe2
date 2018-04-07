@@ -138,7 +138,7 @@ public class Analyzer implements ComplexityAnalyzer {
     			allMatches.remove(obj);
     			flag = true;
     			for(int i=0; i<=strings.length-2; i++){
-    				System.out.println("case" +i);
+    				//System.out.println("case" +i);
     				allMatches.add("case" + i);
     			}
     		}
