@@ -93,7 +93,7 @@ public class Analyzer implements ComplexityAnalyzer {
     private int getComplexity(String compiledjavapcode){
     	final List<String> allMatches = new ArrayList<String>();
     	final Matcher matcher = Pattern.compile("([0-9]+\\:[a-z]+switch[ ]+\\{\n[ ]*[0-9]+\\: [0-9]+)|([0-9]+\\: [0-9]+)|"
-    			+ "(default\\: [0-9]+[ ]*\n[ ]*\\})|([0-9]+[ ]+[0-9]+[ ]+[0-9]+[ ]+Class[ ]+[a-z\\/A-Z]+)|"
+    			+ "([0-9]+[ ]+[0-9]+[ ]+[0-9]+[ ]+Class[ ]+[a-z\\/A-Z]+)|"
     			+ "([A-Za-z\\.$0-9]+\\([A-Za-z]*\\)\\;\n[ ]*Code:)|(if[a-z_]+[ ]+[0-9]+)|(void [a-z]+\\([a-z\\.A-Z\\[\\]]*\\)\\;\n[ ]*Code:)").matcher(compiledjavapcode);
     	
     	while (matcher.find()) {
@@ -126,7 +126,8 @@ public class Analyzer implements ComplexityAnalyzer {
 			try{
 				final String string = runProgram("javap","-c","-p",path.toString());
 				final int complexity = getComplexity(string);
-				map.put(path.toString(), complexity);
+				final String ss = ((rootdir.relativize(path)).toString()).replaceAll("/"+"|"+System.getProperty("file.seperator"),"\\.");
+				map.put(ss, complexity);
 			}
 			catch( InterruptedException interruptedException){
 				Logger.getAnonymousLogger().log(Level.SEVERE, "InterruptedException occured!", interruptedException);
