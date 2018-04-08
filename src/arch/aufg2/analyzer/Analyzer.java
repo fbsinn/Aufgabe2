@@ -17,8 +17,6 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
-import java.util.TreeSet;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.regex.Matcher;
@@ -115,17 +113,7 @@ public class Analyzer implements ComplexityAnalyzer {
      * @return Komplexitaet
      * */
     private int getComplexity(String compiledjavapcode){
-    	System.out.println("##################  §§§§§§§§§§§  ##################");
-    	System.out.println(compiledjavapcode);
-    	System.out.println("##################  §§§§§§§§§§§  ##################");
-    	
-    	//final String[] strings = compiledjavapcode.split("([0-9]+\\: if[a-z_]+[ ]+[0-9]+)|([0-9]+\\: invoke[a-z]+[ ]+#[0-9]+)");
-    	//final String[] strings = compiledjavapcode.split("(invokevirtual[ ]#[0-9]+)([0-9]+\\: invokedynamic #[0-9]+\\,[ ]+[0-9]+)|(Code\\:[ ]*)|([0-9]+\\: if[a-z_]*[ ]+[0-9]+)|(Class)");
     	final List<String> allMatches = new ArrayList<String>();
-    	//final Matcher m = Pattern.compile("([0-9]+\\: invokedynamic #[0-9]+\\,[ ]+[0-9]+)|(Code\\:[ ]*)|([0-9]+\\: if[a-z_]*[ ]+[0-9]+)|(Class)").matcher(compiledjavapcode);
-    	//final Matcher m = Pattern.compile("(invokevirtual #3)|([0-9]+\\: invokedynamic #[0-9]+\\,[ ]+[0-9]+)|(Code\\:[ ]*)|([0-9]+\\: if[a-z_]*[ ]+[0-9]+)|(Class)").matcher(compiledjavapcode);
-    	//final Matcher m = Pattern.compile("(lookupswitch[ ]+\\{[^\\}]+\\})|(tableswitch[ ]+\\{[^\\}]+\\})|([0-9]+[ ]+[0-9]+[ ]+[0-9]+[ ]+Class[ ]+[a-z\\/A-Z]+)|([A-Za-z\\.$0-9]+\\([A-Za-z]*\\)\\;\n[ ]*Code:)|"
-    	//		+ "(if[a-z_]+[ ]+[0-9]+)|(void [a-z]+\\([a-z\\.A-Z\\[\\]]*\\)\\;\n[ ]*Code:)").matcher(compiledjavapcode);
     	final Matcher matcher = Pattern.compile("([0-9]+\\:[a-z]+switch[ ]+\\{\n[ ]*[0-9]+\\: [0-9]+)|([0-9]+\\: [0-9]+)|"
     			+ "(default\\: [0-9]+[ ]*\n[ ]*\\})|([0-9]+[ ]+[0-9]+[ ]+[0-9]+[ ]+Class[ ]+[a-z\\/A-Z]+)|"
     			+ "([A-Za-z\\.$0-9]+\\([A-Za-z]*\\)\\;\n[ ]*Code:)|(if[a-z_]+[ ]+[0-9]+)|(void [a-z]+\\([a-z\\.A-Z\\[\\]]*\\)\\;\n[ ]*Code:)").matcher(compiledjavapcode);
@@ -133,52 +121,7 @@ public class Analyzer implements ComplexityAnalyzer {
     	while (matcher.find()) {
     	   allMatches.add(matcher.group());
     	}
-    	final Set<String> set = new TreeSet<>(allMatches);
-    	/*boolean flag = false;
-    	for(String s:set){
-    		String obj = s;
-    		if(s.matches("(tableswitch[ ]+\\{[^\\}]+\\})|((lookupswitch[ ]+\\{[^\\}]+\\}))")){ 
-    			String[] strings = s.split("[0-9a-z]+\\: [0-9]+");
-    			allMatches.remove(obj);
-    			flag = true;
-    			for(int i=0; i<=strings.length-2; i++){
-    				//System.out.println("case" +i);
-    				allMatches.add("case" + i);
-    			}
-    		}
-    		//System.out.println(s);
-    	}
-    	if(flag){
-    		set.clear();
-    		set.addAll(allMatches);
-    		for(String s:set){
-    			System.out.println(s);
-    		}
-    		
-    	} */
-    /*	int i=0;
-    	int u=0;
-    	for(String s:allMatches){
-    		
-    		if(s.matches("invokevirtual #[0-9]")){
-    			u=1; System.out.println(s + "   " +u);
-    		}
-    		else if(s.matches("invokevirtual #4")){
-    			u=1; System.out.println(s + "   " +u);
-    		}
-    		else{
-    			i++; System.out.println(s + "   " +i);
-    		}
-    	} */
-    	System.out.println("Size   "+set.size());
-    	/*
-    	Set<String> set = new TreeSet<>(allMatches);
-    	System.out.println("XXXXXXXXXXXX EEEEEEEEEE XXXXXXXXXXXXX");
-    	for(String s:set){
-    		System.out.println(s);
-    	} */
-    	
-    	return set.size();
+    	return allMatches.size();
     }
 
     /**
