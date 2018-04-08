@@ -6,7 +6,6 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.Reader;
-import java.net.URI;
 import java.net.URISyntaxException;
 import java.nio.charset.Charset;
 import java.nio.file.Files;
@@ -93,17 +92,38 @@ public class Analyzer implements ComplexityAnalyzer {
      * @throws IOException wenn javap nicht gefunden wird
      * */
     private Path getJavapPath() throws IOException{
-    	Path result = rootdir;
-    		final String osname = System.getProperty("os.name");
-    	if(osname.matches("(l|L)inux")){
-    		try {
-    			result = Paths.get(new URI("file:///usr/lib/jvm/java-8-openjdk-amd64/bin/javap"));
-    		}catch(URISyntaxException exception){
-    			Logger.getAnonymousLogger().log(Level.SEVERE, "URISyntaxException occured!", exception);
+    		//final String osname = System.getProperty("os.name");
+    		final List<Path> list = new ArrayList<Path>();
+    		final File file = new File(System.getProperty("java.home"));
+    		System.out.println(Paths.get(System.getProperty("java.home")));
+    		final List<String> list2 = new ArrayList<>();
+    		
+    		final Matcher matcher = Pattern.compile(".+(java|jdk|Java|JDK).+?/").matcher(file.getAbsolutePath());
+    		while (matcher.find()) {
+    			   System.out.println(matcher.group());
+    	    	   list2.add(matcher.group());
+    	    	}
+    		
+    		for(String string:list2){
+    			for(Iterator<Path> iterator= Files.walk(Paths.get(new File(string).toURI())).iterator(); iterator.hasNext();){
+    				final Path path = iterator.next();
+    				final String string2 = path.toString();
+    				if(string2.matches(".*javap")){
+    					System.out.println("String s : " + string2);
+    					list.add(path);
+    				}
+    			}	
     		}
-    	}
+    		return list.get(0);
+    	//if(osname.matches("(l|L)inux")){
+    	//	try {
+    	//		result = Paths.get(new URI("file:///usr/lib/jvm/java-8-openjdk-amd64/bin/javap"));
+    	//	}catch(URISyntaxException exception){
+    	//		Logger.getAnonymousLogger().log(Level.SEVERE, "URISyntaxException occured!", exception);
+    	//	}
+    	//}
     	
-    	return result;
+    	//return result;
     }
     
     /**
