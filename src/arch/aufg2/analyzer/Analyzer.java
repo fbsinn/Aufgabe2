@@ -126,8 +126,8 @@ public class Analyzer implements ComplexityAnalyzer {
 			try{
 				final String string = runProgram("javap","-c","-p",path.toString());
 				final int complexity = getComplexity(string);
-				final String ss = ((rootdir.relativize(path)).toString()).replaceAll("/"+"|"+System.getProperty("file.seperator"),"\\.");
-				map.put(ss, complexity);
+				final String strings = rootdir.relativize(path).toString().replaceAll("/"+"|"+System.getProperty("file.seperator"),"\\.");
+				map.put(strings, complexity);
 			}
 			catch( InterruptedException interruptedException){
 				Logger.getAnonymousLogger().log(Level.SEVERE, "InterruptedException occured!", interruptedException);
