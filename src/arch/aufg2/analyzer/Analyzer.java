@@ -94,7 +94,7 @@ public class Analyzer implements ComplexityAnalyzer {
     	final List<String> allMatches = new ArrayList<String>();
     	final Matcher matcher = Pattern.compile("([0-9]+\\:[a-z]+switch[ ]+\\{\n[ ]*[0-9]+\\: [0-9]+)|([0-9]+\\: [0-9]+)|"
     			+ "([0-9]+[ ]+[0-9]+[ ]+[0-9]+[ ]+Class[ ]+[a-z\\/A-Z]+)|"
-    			+ "([A-Za-z\\.$0-9]+\\([A-Za-z]*\\)\\;\n[ ]*Code:)|(if[a-z_]+[ ]+[0-9]+)|(void [a-z]+\\([a-z\\.A-Z\\[\\]]*\\)\\;\n[ ]*Code:)").matcher(compiledjavapcode);
+    			+ "([A-Za-z\\.$0-9]+\\([a-z\\.A-Z\\[\\]]*\\)\\;\n[ ]*Code:)|(if[a-z_]+[ ]+[0-9]+)|([a-z]+\\([a-z\\.A-Z\\[\\]]*\\)\\;\n[ ]*Code:)").matcher(compiledjavapcode);
     	
     	while (matcher.find()) {
     	   allMatches.add(matcher.group());
@@ -117,7 +117,7 @@ public class Analyzer implements ComplexityAnalyzer {
 			final Path path = iterator.next();
 			final String string = path.toString();
 			if(string.matches("(.)*\\.class")){
-				System.out.println("String s : " + string);
+				//System.out.println("String s : " + string);
 				list.add(path);
 			}
 		}
