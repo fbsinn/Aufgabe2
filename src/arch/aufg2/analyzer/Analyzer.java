@@ -84,39 +84,6 @@ public class Analyzer implements ComplexityAnalyzer {
         }
         return output.stream().collect(Collectors.joining("\n"));
     }
-    
-    /**
-     * Sucht das Programm javap.
-     * @author fabian
-     * @return Pfad zu Javap
-     * @throws IOException wenn javap nicht gefunden wird
-     * */
-    private Path getJavapPath() throws IOException{
-    		//final String osname = System.getProperty("os.name");
-    		final List<Path> list = new ArrayList<Path>();
-    		final File file = new File(System.getProperty("java.home"));
-    		System.out.println(Paths.get(System.getProperty("java.home")));
-    		final List<String> list2 = new ArrayList<>();
-    		
-    		final Matcher matcher = Pattern.compile(".+(java|jdk|Java|JDK).(.+?/)?").matcher(file.getAbsolutePath());
-    		while (matcher.find()) {
-    			   System.out.println(matcher.group());
-    	    	   list2.add(matcher.group());
-    	    	}
-    		
-    		for(String string:list2){
-    			for(Iterator<Path> iterator= Files.walk(Paths.get(new File(string).toURI())).iterator(); iterator.hasNext();){
-    				final Path path = iterator.next();
-    				final String string2 = path.toString();
-    				if(string2.matches(".*bin.*javap.*")){
-    					System.out.println("String s : " + string2);
-    					list.add(path);
-    				}
-    			}	
-    		}
-    		return list.get(0);
-    }
-    
     /**
      * Berechnet die Komplexitaet des Assembly code.
      * @author fabian
@@ -146,9 +113,6 @@ public class Analyzer implements ComplexityAnalyzer {
 		final List<Path> list = new ArrayList<Path>();
 		final Map<String, Integer> map = new HashMap<>();
 		
-		final Path javap = getJavapPath();	// Versuche den Pfad zu javap herauszufinden
-		final String javapstring = javap.toString();
-		
 		for(Iterator<Path> iterator= Files.walk(rootdir).iterator(); iterator.hasNext();){
 			final Path path = iterator.next();
 			final String string = path.toString();
@@ -160,7 +124,7 @@ public class Analyzer implements ComplexityAnalyzer {
 		
 		for(Path path:list){
 			try{
-				final String string = runProgram(javapstring,"-c","-p",path.toString());
+				final String string = runProgram("javap","-c","-p",path.toString());
 				final int complexity = getComplexity(string);
 				map.put(path.toString(), complexity);
 			}
