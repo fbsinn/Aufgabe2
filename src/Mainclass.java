@@ -1,5 +1,6 @@
+
+import java.io.File;
 import java.io.IOException;
-import java.net.URI;
 import java.net.URISyntaxException;
 import java.nio.file.Paths;
 import java.util.Map;
@@ -21,7 +22,7 @@ public class Mainclass {
 	 * */
 	public static void main(String[] args) throws URISyntaxException,IOException{
 		final Analyzer smart = new Analyzer();
-		smart.setRootdir(Paths.get(URI.create("file:///home/fabian/SARCH")));
+		smart.setRootdir(Paths.get(new File("/home/fabian/SARCH").toURI()));
 		System.out.println("\n Bitte Warten auf Ergebnis \n");
 		final Map<String, Integer> map = smart.analyzeClassfiles();
 		System.out.println("+++++++++++++++++++++++++++++++++");

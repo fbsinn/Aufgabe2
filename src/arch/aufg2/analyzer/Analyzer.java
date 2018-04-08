@@ -115,15 +115,6 @@ public class Analyzer implements ComplexityAnalyzer {
     			}	
     		}
     		return list.get(0);
-    	//if(osname.matches("(l|L)inux")){
-    	//	try {
-    	//		result = Paths.get(new URI("file:///usr/lib/jvm/java-8-openjdk-amd64/bin/javap"));
-    	//	}catch(URISyntaxException exception){
-    	//		Logger.getAnonymousLogger().log(Level.SEVERE, "URISyntaxException occured!", exception);
-    	//	}
-    	//}
-    	
-    	//return result;
     }
     
     /**
