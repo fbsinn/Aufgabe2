@@ -98,7 +98,7 @@ public class Analyzer implements ComplexityAnalyzer {
     		System.out.println(Paths.get(System.getProperty("java.home")));
     		final List<String> list2 = new ArrayList<>();
     		
-    		final Matcher matcher = Pattern.compile(".+(java|jdk|Java|JDK).+?/").matcher(file.getAbsolutePath());
+    		final Matcher matcher = Pattern.compile(".+(java|jdk|Java|JDK).(.+?/)?").matcher(file.getAbsolutePath());
     		while (matcher.find()) {
     			   System.out.println(matcher.group());
     	    	   list2.add(matcher.group());
@@ -108,7 +108,7 @@ public class Analyzer implements ComplexityAnalyzer {
     			for(Iterator<Path> iterator= Files.walk(Paths.get(new File(string).toURI())).iterator(); iterator.hasNext();){
     				final Path path = iterator.next();
     				final String string2 = path.toString();
-    				if(string2.matches(".*javap")){
+    				if(string2.matches(".*bin.*javap.*")){
     					System.out.println("String s : " + string2);
     					list.add(path);
     				}
